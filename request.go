@@ -45,7 +45,7 @@ func SignPSSText(key *rsa.PrivateKey, msg string) (string, error) {
 	return base64.StdEncoding.EncodeToString(sig), nil
 }
 
-func Request[T any](route, method, keyID, keyPEM string, useAuth bool, params ...interface{}) (T, error) {
+func Request[T any](route, method, keyID, keyPem string, useAuth bool, params ...interface{}) (T, error) {
 	var zero T
 
 	if !strings.HasPrefix(route, "/") {
@@ -59,7 +59,7 @@ func Request[T any](route, method, keyID, keyPEM string, useAuth bool, params ..
 
 	var sig string
 	if useAuth {
-		priv, err := LoadPrivateKeyFromString(keyPEM)
+		priv, err := LoadPrivateKeyFromString(keyPem)
 		if err != nil {
 			return zero, err
 		}
