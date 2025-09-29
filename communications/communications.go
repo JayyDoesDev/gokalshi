@@ -65,6 +65,13 @@ type RFQ struct {
 	UpdateTs             string `json:"updated_ts"`
 }
 
+type RFQOptions struct {
+	Contracts            int    `json:"contracts"`
+	MarketTicker         string `json:"market_ticker"`
+	RestRemainder        bool   `json:"rest_remainder"`
+	TargetCostCentiCents int    `json:"target_cost_centi_cents"`
+}
+
 func GetCommunicationsId(keyID, keyPem string) ([]byte, error) {
 	return gokalshi.Request[[]byte]("/communications/id", "GET", keyID, keyPem, true)
 }
@@ -73,8 +80,8 @@ func GetQuotes(keyID, keyPem string) ([]byte, error) {
 	return gokalshi.Request[[]byte]("/communications/quotes", "GET", keyID, keyPem, true)
 }
 
-func CreateQuote(opts CreateQuoteOptions, keyID, keyPem string) ([]byte, error) {
-	return gokalshi.Request[[]byte]("/communications/quotes", "POST", keyID, keyPem, true, opts)
+func CreateQuote(params CreateQuoteOptions, keyID, keyPem string) ([]byte, error) {
+	return gokalshi.Request[[]byte]("/communications/quotes", "POST", keyID, keyPem, true, params)
 }
 
 func GetQuote(q, keyID, keyPem string) ([]byte, error) {
@@ -97,4 +104,16 @@ func ConfirmQuote(q, keyID, keyPem string) ([]byte, error) {
 
 func GetRFQs(keyID, keyPem string) ([]byte, error) {
 	return gokalshi.Request[[]byte]("/communications/rfqs", "GET", keyID, keyPem, true)
+}
+
+func CreateRFQs(params RFQOptions, keyID, keyPem string) ([]byte, error) {
+	return gokalshi.Request[[]byte]("/communications/rfqs", "POST", keyID, keyPem, true, params)
+}
+
+func GetRFQ(rfq, keyID, keyPem string) ([]byte, error) {
+	return gokalshi.Request[[]byte]("/communications/rfqs/"+rfq, "GET", keyID, keyPem, true)
+}
+
+func DeleteRFQ(rfq, keyID, keyPem string) ([]byte, error) {
+	return gokalshi.Request[[]byte]("/communications/rfqs/"+rfq, "DELETE", keyID, keyPem, true)
 }
