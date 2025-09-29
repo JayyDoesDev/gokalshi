@@ -18,11 +18,6 @@ type PercentilePoints struct {
 	RawNumericalForcast string `json:"raw_numerical_forcast"`
 }
 
-func GetCachedEventsForcastHistory(t, keyID, keyPath string) (CachedEventsForcastHistory, error) {
-	data, err := Request[CachedEventsForcastHistory]("/cached/events/"+t+"/forcast_history", "GET", keyID, keyPath)
-	if err != nil {
-		return CachedEventsForcastHistory{}, err
-	}
-
-	return data, nil
+func GetCachedEventsForcastHistory(t, keyID, keyPem string, auth bool) ([]byte, error) {
+	return Request[[]byte]("/cached/events/"+t+"/forcast_history", "GET", keyID, keyPem, auth)
 }

@@ -49,11 +49,6 @@ type MarketCandleSticks struct {
 	} `json:"yes_bid"`
 }
 
-func GetEventsCandleSticks(t, keyID, keypath string) (MarketCandleSticks, error) {
-	data, err := Request[MarketCandleSticks]("/events/"+t+"/candlesticks", "GET", keyID, keypath)
-	if err != nil {
-		return MarketCandleSticks{}, err
-	}
-
-	return data, nil
+func GetEventsCandleSticks(t, keyID, keyPem string, auth bool) ([]byte, error) {
+	return Request[[]byte]("/events/"+t+"/candlesticks", "GET", keyID, keyPem, auth)
 }

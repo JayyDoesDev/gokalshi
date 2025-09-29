@@ -25,11 +25,6 @@ type OpenCloseTime struct {
 	OpenTime  string `json:"open_time"`
 }
 
-func GetExchangeSchedule(keyID, keyPath string) (ExchangeSchedule, error) {
-	data, err := Request[ExchangeSchedule]("/exchange/schedule", "GET", keyID, keyPath)
-	if err != nil {
-		return ExchangeSchedule{}, err
-	}
-
-	return data, nil
+func GetExchangeSchedule(keyID, keyPem string, auth bool) ([]byte, error) {
+	return Request[[]byte]("/exchange/schedule", "GET", keyID, keyPem, auth)
 }

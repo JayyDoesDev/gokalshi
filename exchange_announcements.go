@@ -9,11 +9,6 @@ type ExchangeAnnoucements struct {
 	} `json:"announcements"`
 }
 
-func GetExchangeAnnoucements(keyID, keyPath string) (ExchangeAnnoucements, error) {
-	data, err := Request[ExchangeAnnoucements]("/exchange/annoucements", "GET", keyID, keyPath)
-	if err != nil {
-		return ExchangeAnnoucements{}, err
-	}
-
-	return data, nil
+func GetExchangeAnnoucements(keyID, keyPem string, auth bool) ([]byte, error) {
+	return Request[[]byte]("/exchange/annoucements", "GET", keyID, keyPem, auth)
 }

@@ -6,11 +6,6 @@ type ExchangeStatus struct {
 	TradingActive               bool   `json:"trading_active"`
 }
 
-func GetExchangeStatus(keyID, keyPath string) (ExchangeStatus, error) {
-	data, err := Request[ExchangeStatus]("/exchange/status", "GET", keyID, keyPath)
-	if err != nil {
-		return ExchangeStatus{}, err
-	}
-
-	return data, nil
+func GetExchangeStatus(keyID, keyPem string, auth bool) ([]byte, error) {
+	return Request[[]byte]("/exchange/status", "GET", keyID, keyPem, auth)
 }

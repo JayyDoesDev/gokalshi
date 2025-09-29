@@ -10,11 +10,6 @@ type SeriesfeeChanges struct {
 	} `json:"series_fee_change_arr"`
 }
 
-func GetSeriesfeeChanges(keyID, keyPath string) (SeriesfeeChanges, error) {
-	data, err := Request[SeriesfeeChanges]("/series/fee_changes", "GET", keyID, keyPath)
-	if err != nil {
-		return SeriesfeeChanges{}, err
-	}
-
-	return data, nil
+func GetSeriesfeeChanges(keyID, keyPem string, auth bool) ([]byte, error) {
+	return Request[[]byte]("/series/fee_changes", "GET", keyID, keyPem, auth)
 }
