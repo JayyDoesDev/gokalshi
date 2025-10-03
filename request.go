@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -45,14 +46,31 @@ func SignPSSText(key *rsa.PrivateKey, msg string) (string, error) {
 	return base64.StdEncoding.EncodeToString(sig), nil
 }
 
-func Request[T any](route, method, keyID, keyPem string, useAuth bool, params ...interface{}) (T, error) {
+func Request[T any](route, method, keyID, keyPem string, useAuth bool, query map[string]string, params ...interface{}) (T, error) {
 	var zero T
 
 	if !strings.HasPrefix(route, "/") {
 		route = "/" + route
 	}
 
+	u, err := url.Parse(baseURL + apiPrefix + route)
+	if err != nil {
+		return zero, err
+	}
+
+	if len(query) > 0 {
+		q := u.Query()
+		for k, v := range query {
+			q.Set(k, v)
+		}
+		u.RawQuery = q.Encode()
+	}
+
 	fullPath := apiPrefix + route
+	if len(query) > 0 {
+		fullPath += "?" + u.RawQuery
+	}
+
 	method = strings.ToUpper(method)
 	tsStr := strconv.FormatInt(time.Now().UnixMilli(), 10)
 	msg := tsStr + method + fullPath
@@ -72,33 +90,28 @@ func Request[T any](route, method, keyID, keyPem string, useAuth bool, params ..
 	fmt.Println("==== KALSHI DEBUG ====")
 	fmt.Println("Base URL:     ", baseURL)
 	fmt.Println("Full Path:    ", fullPath)
-	fmt.Println("Full URL:     ", baseURL+fullPath)
+	fmt.Println("Full URL:     ", u.String())
 	fmt.Println("HTTP Method:  ", method)
 	fmt.Println("Timestamp:    ", tsStr)
 	fmt.Println("Signing Msg:  ", msg)
 	fmt.Println("======================")
 
-	var req *http.Request
+	var reqBody io.Reader
 	if len(params) > 0 {
-		data, err := json.Marshal(params)
+		data, err := json.Marshal(params[0])
 		if err != nil {
 			return zero, err
 		}
-		req, err = http.NewRequest(method, baseURL+fullPath, bytes.NewBuffer(data))
-		if err != nil {
-			return zero, err
-		}
-	} else {
-		var err error
-		req, err = http.NewRequest(method, baseURL+fullPath, nil)
-		if err != nil {
-			return zero, err
-		}
+		reqBody = bytes.NewBuffer(data)
+	}
+
+	req, err := http.NewRequest(method, u.String(), reqBody)
+	if err != nil {
+		return zero, err
 	}
 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "gokalshi")
-
 	if useAuth {
 		req.Header.Set("KALSHI-ACCESS-KEY", keyID)
 		req.Header.Set("KALSHI-ACCESS-SIGNATURE", sig)
@@ -129,7 +142,7 @@ func Request[T any](route, method, keyID, keyPem string, useAuth bool, params ..
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return zero, errors.New("non-2xx status: " + resp.Status + " body: " + string(body))
+		return zero, fmt.Errorf("non-2xx status: %s body: %s", resp.Status, string(body))
 	}
 
 	var result T

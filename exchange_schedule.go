@@ -26,5 +26,5 @@ type OpenCloseTime struct {
 }
 
 func GetExchangeSchedule(keyID, keyPem string, auth bool) ([]byte, error) {
-	return Request[[]byte]("/exchange/schedule", "GET", keyID, keyPem, auth)
+	return Request[[]byte]("/exchange/schedule", "GET", keyID, keyPem, auth, map[string]string{})
 }

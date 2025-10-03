@@ -10,5 +10,5 @@ type ExchangeAnnoucements struct {
 }
 
 func GetExchangeAnnoucements(keyID, keyPem string, auth bool) ([]byte, error) {
-	return Request[[]byte]("/exchange/annoucements", "GET", keyID, keyPem, auth)
+	return Request[[]byte]("/exchange/annoucements", "GET", keyID, keyPem, auth, map[string]string{})
 }

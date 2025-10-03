@@ -7,5 +7,5 @@ type ExchangeStatus struct {
 }
 
 func GetExchangeStatus(keyID, keyPem string, auth bool) ([]byte, error) {
-	return Request[[]byte]("/exchange/status", "GET", keyID, keyPem, auth)
+	return Request[[]byte]("/exchange/status", "GET", keyID, keyPem, auth, map[string]string{})
 }

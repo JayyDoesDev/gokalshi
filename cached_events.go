@@ -19,5 +19,5 @@ type PercentilePoints struct {
 }
 
 func GetCachedEventsForcastHistory(t, keyID, keyPem string, auth bool) ([]byte, error) {
-	return Request[[]byte]("/cached/events/"+t+"/forcast_history", "GET", keyID, keyPem, auth)
+	return Request[[]byte]("/cached/events/"+t+"/forcast_history", "GET", keyID, keyPem, auth, map[string]string{})
 }
