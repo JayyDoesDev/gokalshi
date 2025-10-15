@@ -1,6 +1,8 @@
 package market
 
-import "github.com/jayydoesdev/gokalshi"
+import (
+	"github.com/jayydoesdev/gokalshi"
+)
 
 type Events struct {
 	Cursor string  `json:"cursor"`
@@ -74,6 +76,44 @@ type Market struct {
 	SettlementValueDollars string `json:"settlement_value_dollars"`
 }
 
-func GetEvents(keyID, keyPem string) ([]byte, error) {
-	return gokalshi.Request[[]byte]("/events", "GET", keyID, keyPem, true, map[string]string{})
+type EventsQuery struct {
+	Limit             int
+	Cursor            string
+	WithNestedMarkets bool
+	Status            string
+	SeriesTracker     string
+	MinCloseTs        int
+}
+
+func (q EventsQuery) ToMap() map[string]string {
+	return map[string]string{
+		"limit":               gokalshi.Sprintf(q.Limit),
+		"cursor":              gokalshi.Sprintf(q.Cursor),
+		"with_nested_markets": gokalshi.Sprintf(q.WithNestedMarkets),
+		"status":              gokalshi.Sprintf(q.Status),
+		"series_tracker":      gokalshi.Sprintf(q.SeriesTracker),
+		"min_close_ts":        gokalshi.Sprintf(q.MinCloseTs),
+	}
+}
+
+type EventQuery struct {
+	WithNestedMarkets bool
+}
+
+func (q EventQuery) ToMap() map[string]string {
+	return map[string]string{
+		"with_nested_markets": gokalshi.Sprintf(q.WithNestedMarkets),
+	}
+}
+
+func GetEvents(keyID, keyPem string, q EventsQuery) ([]byte, error) {
+	return gokalshi.Request[[]byte]("/events", "GET", keyID, keyPem, true, q.ToMap())
+}
+
+func GetEvent(et, keyID, keyPem string, q EventQuery) ([]byte, error) {
+	return gokalshi.Request[[]byte]("/events/"+et, "GET", keyID, keyPem, true, q.ToMap())
+}
+
+func GetEventMeta(et, keyID, keyPem string) ([]byte, error) {
+	return gokalshi.Request[[]byte]("/events/"+et+"/metadata", "GET", keyID, keyPem, true, map[string]string{})
 }

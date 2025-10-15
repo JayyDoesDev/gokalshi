@@ -11,5 +11,5 @@ type SeriesfeeChanges struct {
 }
 
 func GetSeriesfeeChanges(keyID, keyPem string, auth bool) ([]byte, error) {
-	return Request[[]byte]("/series/fee_changes", "GET", keyID, keyPem, auth)
+	return Request[[]byte]("/series/fee_changes", "GET", keyID, keyPem, auth, map[string]string{})
 }
