@@ -76,6 +76,23 @@ type Market struct {
 	SettlementValueDollars string `json:"settlement_value_dollars"`
 }
 
+type Trades struct {
+	Cursor string  `json:"cursor"`
+	Trades []Trade `json:"trades"`
+}
+
+type Trade struct {
+	Count           int    `json:"count"`
+	CreateTime      string `json:"created_time"`
+	NoPrice         int    `json:"no_price"`
+	NoPriceDollars  string `json:"no_price_dollars"`
+	TakerSide       string `json:"taker_side"`
+	Ticker          string `json:"ticker"`
+	TradeId         string `json:"trade_id"`
+	YesPrice        int    `json:"yes_price"`
+	YesPriceDollars string `json:"yes_price_dollars"`
+}
+
 type EventsQuery struct {
 	Limit             int
 	Cursor            string
@@ -106,6 +123,48 @@ func (q EventQuery) ToMap() map[string]string {
 	}
 }
 
+type MarketsQuery struct {
+	Limit        int
+	Cursor       string
+	EventTicker  string
+	SeriesTicker string
+	MaxCloseTs   int
+	MinCloseTs   int
+	Status       string
+	Tickers      string
+}
+
+func (q MarketsQuery) ToMap() map[string]string {
+	return map[string]string{
+		"limit":         gokalshi.Sprintf(q.Limit),
+		"cursor":        gokalshi.Sprintf(q.Cursor),
+		"event_ticker":  gokalshi.Sprintf(q.EventTicker),
+		"series_ticker": gokalshi.Sprintf(q.SeriesTicker),
+		"max_close_ts":  gokalshi.Sprintf(q.MaxCloseTs),
+		"min_close_ts":  gokalshi.Sprintf(q.MinCloseTs),
+		"status":        gokalshi.Sprintf(q.Status),
+		"tickers":       gokalshi.Sprintf(q.Tickers),
+	}
+}
+
+type TradesQuery struct {
+	Limit  int
+	Cursor string
+	Ticker string
+	MinTs  int
+	MaxTs  int
+}
+
+func (q TradesQuery) ToMap() map[string]string {
+	return map[string]string{
+		"limit":  gokalshi.Sprintf(q.Limit),
+		"cursor": gokalshi.Sprintf(q.Cursor),
+		"ticker": gokalshi.Sprintf(q.Ticker),
+		"min_ts": gokalshi.Sprintf(q.MinTs),
+		"max_ts": gokalshi.Sprintf(q.MaxTs),
+	}
+}
+
 func GetEvents(keyID, keyPem string, q EventsQuery) ([]byte, error) {
 	return gokalshi.Request[[]byte]("/events", "GET", keyID, keyPem, true, q.ToMap())
 }
@@ -116,4 +175,12 @@ func GetEvent(et, keyID, keyPem string, q EventQuery) ([]byte, error) {
 
 func GetEventMeta(et, keyID, keyPem string) ([]byte, error) {
 	return gokalshi.Request[[]byte]("/events/"+et+"/metadata", "GET", keyID, keyPem, true, map[string]string{})
+}
+
+func GetMarkets(keyID, keyPem string, q MarketsQuery) ([]byte, error) {
+	return gokalshi.Request[[]byte]("/markets", "GET", keyID, keyPem, true, q.ToMap())
+}
+
+func GetTrades(keyID, keyPem string, q TradesQuery) ([]byte, error) {
+	return gokalshi.Request[[]byte]("/markets/trades", "GET", keyID, keyPem, true, q.ToMap())
 }
