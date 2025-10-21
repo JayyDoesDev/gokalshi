@@ -10,7 +10,7 @@ cleanall: clean-macos-metadata
 
 test:
 	@echo "Running tests..."
-	@go test ./...
+	@go test ./tests -v
 
 tidy:
 	@echo "Tidying modules..."

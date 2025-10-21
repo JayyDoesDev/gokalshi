@@ -1,9 +1,5 @@
 package market
 
-import (
-	"github.com/jayydoesdev/gokalshi"
-)
-
 type Events struct {
 	Cursor string  `json:"cursor"`
 	Events []Event `json:"events"`
@@ -16,13 +12,13 @@ type Event struct {
 	EventTicker          string   `json:"event_ticker"`
 	Markets              []Market `json:"markets"`
 
-	MutuallyExclusive   bool        `json:"mutually_exclusive"`
-	PriceLevelStructure string      `json:"price_level_structure"`
-	SeriesTicker        string      `json:"series_ticker"`
-	StrikeDate          interface{} `json:"strike_date"`
-	StrikePeriod        string      `json:"strike_period"`
-	SubTitle            string      `json:"sub_title"`
-	Title               string      `json:"title"`
+	MutuallyExclusive   bool     `json:"mutually_exclusive"`
+	PriceLevelStructure string   `json:"price_level_structure"`
+	SeriesTicker        string   `json:"series_ticker"`
+	StrikeDate          struct{} `json:"strike_date"`
+	StrikePeriod        string   `json:"strike_period"`
+	SubTitle            string   `json:"sub_title"`
+	Title               string   `json:"title"`
 }
 
 type Market struct {
@@ -93,94 +89,77 @@ type Trade struct {
 	YesPriceDollars string `json:"yes_price_dollars"`
 }
 
-type EventsQuery struct {
-	Limit             int
-	Cursor            string
-	WithNestedMarkets bool
-	Status            string
-	SeriesTracker     string
-	MinCloseTs        int
+type MarketOrderBook struct {
+	Orderbook struct {
+		No         [][]int `json:"no"`
+		NoDollars  []any   `json:"no_dullars"`
+		Yes        [][]int `json:"yes"`
+		YesDollars []any   `json:"yes_dollars"`
+	} `json:"orderbook"`
 }
 
-func (q EventsQuery) ToMap() map[string]string {
-	return map[string]string{
-		"limit":               gokalshi.Sprintf(q.Limit),
-		"cursor":              gokalshi.Sprintf(q.Cursor),
-		"with_nested_markets": gokalshi.Sprintf(q.WithNestedMarkets),
-		"status":              gokalshi.Sprintf(q.Status),
-		"series_tracker":      gokalshi.Sprintf(q.SeriesTracker),
-		"min_close_ts":        gokalshi.Sprintf(q.MinCloseTs),
-	}
+type SeriesList struct {
+	Series []Series `json:"series"`
 }
 
-type EventQuery struct {
-	WithNestedMarkets bool
+type Series struct {
+	AdditionalProhibitions []string `json:"additional_prohibitions"`
+	Category               string   `json:"category"`
+	ContractTermsUrl       string   `json:"contract_terms_url"`
+	FeeMultiplier          int      `json:"fee_multiplier"`
+	FeeType                string   `json:"fee_type"`
+	Frequency              string   `json:"frequency"`
+	ProductMetadata        struct {
+		Key struct{} `json:"key"`
+	} `json:"product_metadata"`
+	SettlementSources []any    `json:"settlement_sources"`
+	Tags              []string `json:"tags"`
+	Ticker            string   `json:"ticker"`
+	Title             string   `json:"title"`
 }
 
-func (q EventQuery) ToMap() map[string]string {
-	return map[string]string{
-		"with_nested_markets": gokalshi.Sprintf(q.WithNestedMarkets),
-	}
+type MarketCandlesticks struct {
+	Candlesticks []MarketCandlestick `json:"candlesticks"`
+	Ticker       string              `json:"ticker"`
 }
 
-type MarketsQuery struct {
-	Limit        int
-	Cursor       string
-	EventTicker  string
-	SeriesTicker string
-	MaxCloseTs   int
-	MinCloseTs   int
-	Status       string
-	Tickers      string
-}
-
-func (q MarketsQuery) ToMap() map[string]string {
-	return map[string]string{
-		"limit":         gokalshi.Sprintf(q.Limit),
-		"cursor":        gokalshi.Sprintf(q.Cursor),
-		"event_ticker":  gokalshi.Sprintf(q.EventTicker),
-		"series_ticker": gokalshi.Sprintf(q.SeriesTicker),
-		"max_close_ts":  gokalshi.Sprintf(q.MaxCloseTs),
-		"min_close_ts":  gokalshi.Sprintf(q.MinCloseTs),
-		"status":        gokalshi.Sprintf(q.Status),
-		"tickers":       gokalshi.Sprintf(q.Tickers),
-	}
-}
-
-type TradesQuery struct {
-	Limit  int
-	Cursor string
-	Ticker string
-	MinTs  int
-	MaxTs  int
-}
-
-func (q TradesQuery) ToMap() map[string]string {
-	return map[string]string{
-		"limit":  gokalshi.Sprintf(q.Limit),
-		"cursor": gokalshi.Sprintf(q.Cursor),
-		"ticker": gokalshi.Sprintf(q.Ticker),
-		"min_ts": gokalshi.Sprintf(q.MinTs),
-		"max_ts": gokalshi.Sprintf(q.MaxTs),
-	}
-}
-
-func GetEvents(keyID, keyPem string, q EventsQuery) ([]byte, error) {
-	return gokalshi.Request[[]byte]("/events", "GET", keyID, keyPem, true, q.ToMap())
-}
-
-func GetEvent(et, keyID, keyPem string, q EventQuery) ([]byte, error) {
-	return gokalshi.Request[[]byte]("/events/"+et, "GET", keyID, keyPem, true, q.ToMap())
-}
-
-func GetEventMeta(et, keyID, keyPem string) ([]byte, error) {
-	return gokalshi.Request[[]byte]("/events/"+et+"/metadata", "GET", keyID, keyPem, true, map[string]string{})
-}
-
-func GetMarkets(keyID, keyPem string, q MarketsQuery) ([]byte, error) {
-	return gokalshi.Request[[]byte]("/markets", "GET", keyID, keyPem, true, q.ToMap())
-}
-
-func GetTrades(keyID, keyPem string, q TradesQuery) ([]byte, error) {
-	return gokalshi.Request[[]byte]("/markets/trades", "GET", keyID, keyPem, true, q.ToMap())
+type MarketCandlestick struct {
+	EndPeriodTs  int `json:"end_period_ts"`
+	OpenInterest int `json:"open_interest"`
+	Price        struct {
+		Close           int    `json:"close"`
+		CloseDollars    string `json:"close_dollars"`
+		High            int    `json:"high"`
+		Low             int    `json:"low"`
+		LowDollars      string `json:"low_dollars"`
+		Mean            int    `json:"mean"`
+		MeanDollars     string `json:"mean_dollars"`
+		Open            int    `json:"open"`
+		OpenDollars     string `json:"open_dollars"`
+		Previous        int    `json:"previous"`
+		PreviousDollars string `json:"previous_dollars"`
+	} `json:"price"`
+	Volume int `json:"volume"`
+	YesAsk struct {
+		Close        int    `json:"close"`
+		CloseDollars string `json:"close_dollars"`
+		High         int    `json:"high"`
+		Low          int    `json:"low"`
+		LowDollars   string `json:"low_dollars"`
+		Mean         int    `json:"mean"`
+		MeanDollars  string `json:"mean_dollars"`
+		Open         int    `json:"open"`
+		OpenDollars  string `json:"open_dollars"`
+	} `json:"yes_ask"`
+	YesBid struct {
+		Close        int    `json:"close"`
+		CloseDollars string `json:"close_dollars"`
+		High         int    `json:"high"`
+		Low          int    `json:"low"`
+		LowDollars   string `json:"low_dollars"`
+		Mean         int    `json:"mean"`
+		MeanDollars  string `json:"mean_dollars"`
+		Open         int    `json:"open"`
+		OpenDollars  string `json:"open_dollars"`
+	} `json:"yes_bid"`
 }

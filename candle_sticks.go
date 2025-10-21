@@ -1,11 +1,11 @@
 package gokalshi
 
-type CandleSticks struct {
+type Candlesticks struct {
 	AdjustedEndTs      int                  `json:"adjusted_end_ts"`
-	MarketCandleSticks []MarketCandleSticks `json:"market_candlesticks"`
+	MarketCandleSticks []MarketCandlesticks `json:"market_candlesticks"`
 }
 
-type MarketCandleSticks struct {
+type MarketCandlesticks struct {
 	EndPeriodTs  int `json:"end_period_ts"`
 	OpenInterest int `json:"open_interest"`
 	Price        map[string]struct {
@@ -49,6 +49,6 @@ type MarketCandleSticks struct {
 	} `json:"yes_bid"`
 }
 
-func GetEventsCandleSticks(t, keyID, keyPem string, auth bool) ([]byte, error) {
+func GetEventsCandlesticks(t, keyID, keyPem string, auth bool) ([]byte, error) {
 	return Request[[]byte]("/events/"+t+"/candlesticks", "GET", keyID, keyPem, auth, map[string]string{})
 }
