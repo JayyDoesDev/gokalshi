@@ -35,5 +35,5 @@ func TestIncentives(t *testing.T) {
 		t.Errorf("Test failed! Incentive programs not found! %v", result.IncentivePrograms)
 	}
 
-	t.Log(result.IncentivePrograms[0].SeriesTicker)
+	t.Log(result.IncentivePrograms[0].IncentiveType)
 }
