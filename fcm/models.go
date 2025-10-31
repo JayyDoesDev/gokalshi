@@ -37,3 +37,37 @@ type FMCOrder struct {
 	OrderGroupId            string `json:"order_group_id"`
 	CancelOrderOnPause      string `json:"cancel_order_on_pause"`
 }
+
+type FCMPositions struct {
+	Cursor          string            `json:"cursor"`
+	MarketPositions []MarketPositions `json:"market_positions"`
+	EventPositions  []EventPositions  `json:"event_positions"`
+}
+
+type MarketPositions struct {
+	Ticker                string `json:"ticker"`
+	TotalTraded           int    `json:"total_traded"`
+	TotalTradedDollars    string `json:"total_traded_dollars"`
+	Position              int    `json:"positions"`
+	MarketExposure        int    `json:"market_exposure"`
+	MarketExposureDollars string `json:"market_exposure_dollars"`
+	RealizedPNL           int    `json:"realized_pnl"`
+	RealizedPNLDollars    int    `json:"realized_pnl_dollars"`
+	RestingOrdersCount    int    `json:"resting_orders_count"`
+	FeesPaid              int    `json:"fees_paid"`
+	FeesPaidDollars       string `json:"fees_paid_dollars"`
+	LastUpdatedTS         string `json:"last_updated_ts"`
+}
+
+type EventPositions struct {
+	EventTicker          string `json:"event_ticker"`
+	TotalCost            int    `json:"total_cost"`
+	TotalCostDollars     string `json:"total_cost_dollars"`
+	EventExposure        int    `json:"event_exposure"`
+	EventExposureDollars string `json:"event_exposure_dollars"`
+	RealizedPNL          int    `json:"realized_pnl"`
+	RealizedPNLDollars   int    `json:"realized_pnl_dollars"`
+	RestingOrdersCount   int    `json:"resting_orders_count"`
+	FeesPaid             int    `json:"fees_paid"`
+	FeesPaidDollars      string `json:"fees_paid_dollars"`
+}
